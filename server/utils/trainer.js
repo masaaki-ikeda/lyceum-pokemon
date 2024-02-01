@@ -25,6 +25,7 @@ export const findTrainers = async () => {
 };
 
 /** トレーナーの取得 */
+// TODO: トレーナーを取得する S3 クライアント処理の実装
 export const findTrainer = async (name) => {
   const object = await s3Client.send(
     new GetObjectCommand({
@@ -49,6 +50,7 @@ export const upsertTrainer = async (name, trainer) => {
 };
 
 /** トレーナーの削除 */
+// TODO: トレーナーを削除する S3 クライアント処理の実装
 export const deleteTrainer = async (name) => {
   const result = await s3Client.send(
     new DeleteObjectCommand({
