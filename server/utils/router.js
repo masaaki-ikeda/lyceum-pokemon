@@ -27,9 +27,11 @@ router.get("/trainers", async (_req, res, next) => {
 /** トレーナーの追加 */
 router.post("/trainer", async (req, res, next) => {
   try {
+    // TODO: リクエストボディにトレーナー名が含まれていなければ400を返す
     if (!("name" in req.body && req.body.name.length > 0))
       return res.sendStatus(400);
     const trainers = await findTrainers();
+    // TODO: すでにトレーナー（S3 オブジェクト）が存在していれば409を返す
     if (trainers.some(({ Key }) => Key === `${req.body.name}.json`))
       return res.sendStatus(409);
     const result = await upsertTrainer(req.body.name, req.body);
@@ -40,6 +42,7 @@ router.post("/trainer", async (req, res, next) => {
 });
 
 /** トレーナーの取得 */
+// TODO: トレーナーを取得する API エンドポイントの実装
 router.get("/trainer/:trainerName", async (req, res, next) => {
   try {
     const { trainerName } = req.params;
@@ -55,6 +58,7 @@ router.post("/trainer/:trainerName", async (req, res, next) => {
   try {
     const { trainerName } = req.params;
     const trainers = await findTrainers();
+    // TODO: トレーナーが存在していなければ404を返す
     if (!trainers.some(({ Key }) => Key === `${trainerName}.json`))
       return res.sendStatus(404);
     const result = await upsertTrainer(trainerName, req.body);
