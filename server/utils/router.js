@@ -9,10 +9,6 @@ import { findPokemon } from "~/server/utils/pokemon";
 
 const router = Router();
 
-router.get("/hello", (_req, res) => {
-  res.send("Hello World");
-});
-
 /** トレーナー名の一覧の取得 */
 router.get("/trainers", async (_req, res, next) => {
   try {
