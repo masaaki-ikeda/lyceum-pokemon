@@ -6,6 +6,7 @@ const { data: trainer, refresh } = await useFetch(
   () => `/api/trainer/${route.params.name}`,
   {
     default: () => [],
+    server: false, // #147: トレーナー画面で再読み込みしたあとのトレーナー取得について修正
     baseUrl: config.public.backendOrigin,
   },
 );
