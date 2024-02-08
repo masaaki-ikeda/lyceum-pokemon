@@ -10,7 +10,7 @@ const { data: trainer, refresh } = await useFetch(
   },
 );
 const onDelete = async () => {
-  const response = await $fetch(`/api/trainer/${route.params.name}`, {
+  const response = await $fetch(`/api/trainer/${route.params.name}`, {//非同期通信
     baseURL: config.public.backendOrigin,
     method: "DELETE",
   }).catch((e) => e);
@@ -23,7 +23,7 @@ const onNickname = async (pokemon) => {
   const index = newTrainer.pokemons.findIndex(({ id }) => id === pokemon.id);
   newTrainer.pokemons[index].nickname = trimAvoidCharacters(nickname.value);
   nickname.value = "";
-  const response = await $fetch(`/api/trainer/${route.params.name}`, {
+  const response = await $fetch(`/api/trainer/${route.params.name}`, { //非同期通信
     baseURL: config.public.backendOrigin,
     method: "POST",
     headers: {
@@ -36,7 +36,7 @@ const onNickname = async (pokemon) => {
   onCloseNickname();
 };
 const onRelease = async (pokemonId) => {
-  const response = await fetch(
+  const response = await fetch( //非同期通信
     `/api/trainer/${route.params.name}/pokemon/${pokemonId}`,
     {
       baseURL: config.public.backendOrigin,
