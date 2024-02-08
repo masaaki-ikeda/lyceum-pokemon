@@ -4,8 +4,16 @@ const config = useRuntimeConfig();
 const trainerName = ref("");
 const safeTrainerName = computed(() => trimAvoidCharacters(trainerName.value));
 const valid = computed(() => safeTrainerName.value.length > 0);
+
+// いいえボタンを押したときに表示を戻す処理
+function setDefault() {
+  document.getElementById("dialog1").style.display = "";
+  document.getElementById("dialog2").style.display = "none";
+}
+
+// はいボタンを押したときの処理
 const onSubmit = async () => {
-  const response = await $fetch("/api/trainer", {
+  const response = await $fetch("/api/trainer", { //非同期
     baseURL: config.public.backendOrigin,
     method: "POST",
     headers: {
@@ -15,9 +23,19 @@ const onSubmit = async () => {
       name: safeTrainerName.value,
     }),
   }).catch((e) => e);
-  if (response instanceof Error) return;
+  if (response instanceof Error){
+    if (response.status==409){
+      document.getElementById("dialog1").style.display = "none";
+      document.getElementById("dialog2").style.display = "";
+      return;
+    }
+    return;
+  }
+  document.getElementById("dialog1").style.display = "";
+  document.getElementById("dialog2").style.display = "none";
   router.push(`/trainer/${safeTrainerName.value}`);
-};
+}
+
 const { dialog, onOpen, onClose } = useDialog();
 </script>
 
@@ -29,8 +47,8 @@ const { dialog, onOpen, onClose } = useDialog();
       <div class="item">
         <label for="name">なまえ</label>
         <span id="name-description"
-          >とくていの　もじは　とりのぞかれるぞ！</span
-        >
+          >とくていの　もじは　とりのぞかれるぞ！
+        </span>
         <input
           id="name"
           v-model="trainerName"
@@ -39,25 +57,45 @@ const { dialog, onOpen, onClose } = useDialog();
         />
       </div>
       <GamifyButton type="button" :disabled="!valid" @click="onOpen(true)"
-        >けってい</GamifyButton
-      >
+        >けってい
+      </GamifyButton>
     </form>
-    <GamifyDialog
+    <div id="dialog1" style="display: '';">
+      <GamifyDialog
       v-if="dialog"
       id="confirm-submit"
       title="かくにん"
       :description="`ふむ・・・　きみは　${safeTrainerName}　と　いうんだな！`"
       @close="onClose"
     >
-      <GamifyList :border="false" direction="horizon">
+    <GamifyList :border="false" direction="horizon">
         <GamifyItem>
-          <GamifyButton @click="onClose">いいえ</GamifyButton>
+          <GamifyButton @click="onClose(); setDefault();">いいえ</GamifyButton>
         </GamifyItem>
         <GamifyItem>
           <GamifyButton @click="onSubmit">はい</GamifyButton>
         </GamifyItem>
       </GamifyList>
     </GamifyDialog>
+    </div>
+    <div id="dialog2" style="display: none;">
+      <GamifyDialog
+      v-if="dialog"
+      id="confirm-submit"
+      title="ようかくにん"
+      :description="`　${safeTrainerName}　はもう使われているぞ！`"
+      @close="onClose"
+    >
+      <GamifyList :border="false" direction="horizon">
+        <GamifyItem>
+          <GamifyButton @click="onClose(); setDefault();">いいえ</GamifyButton>
+        </GamifyItem>
+        <GamifyItem>
+          <GamifyButton @click="onSubmit">それでもいい</GamifyButton>
+        </GamifyItem>
+      </GamifyList>
+    </GamifyDialog>
+    </div>
   </div>
 </template>
 

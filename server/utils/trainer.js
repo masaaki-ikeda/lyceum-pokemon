@@ -47,7 +47,7 @@ export const upsertTrainer = async (name, trainer) => {
     new PutObjectCommand({
       Bucket: config.bucketName,
       Key: `${name}.json`, // jsonファイルを指定
-      Body: JSON.stringify({ name: "", pokemons: [], ...trainer }), // jsonファ
+      Body: JSON.stringify({ name: "", pokemons: [], ...trainer }), // jsonファイル
     }),
   );
   return result;

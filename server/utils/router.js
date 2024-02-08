@@ -40,12 +40,14 @@ router.post("/trainer", async (req, res, next) => {
   // 衝突するかも
   try {
     // TODO: リクエストボディにトレーナー名が含まれていなければ400を返す
-    if (!("name" in req.body && req.body.name.length > 0))
+    if (!("name" in req.body && req.body.name.length > 0)){
       return res.sendStatus(400);
+    }
     // TODO: すでにトレーナー（S3 オブジェクト）が存在していれば409を返す
     const trainers = await findTrainers();
-    if (trainers.some(({ Key }) => Key === `${req.body.name}.json`))
+    if (trainers.some(({ Key }) => Key === `${req.body.name}.json`)){
       return res.sendStatus(409);
+    }
     const result = await upsertTrainer(req.body.name, req.body); // 非同期通信
     res.status(result["$metadata"].httpStatusCode).send(result);
   } catch (err) {
