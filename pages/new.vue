@@ -83,7 +83,7 @@ const { dialog, onOpen, onClose } = useDialog();
       v-if="dialog"
       id="confirm-submit"
       title="ようかくにん"
-      :description="`　${safeTrainerName}　はもうつかわれているぞ！`"
+      :description="`　${safeTrainerName}　はもう　つかわれているぞ！`"
       @close="onClose"
     >
       <GamifyList :border="false" direction="horizon">
