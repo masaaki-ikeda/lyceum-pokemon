@@ -6,12 +6,14 @@ const { data: trainer, refresh } = await useFetch(
   () => `/api/trainer/${route.params.name}`,
   {
     default: () => [],
-    server: false, // #147: トレーナー画面で再読み込みしたあとのトレーナー取得について修正
+    // #147: トレーナー画面で再読み込みしたあとのトレーナー取得について修正
+    server: false,
     baseUrl: config.public.backendOrigin,
   },
 );
 const onDelete = async () => {
-  const response = await $fetch(`/api/trainer/${route.params.name}`, {//非同期通信
+  //非同期通信
+  const response = await $fetch(`/api/trainer/${route.params.name}`, {
     baseURL: config.public.backendOrigin,
     method: "DELETE",
   }).catch((e) => e);
@@ -24,7 +26,8 @@ const onNickname = async (pokemon) => {
   const index = newTrainer.pokemons.findIndex(({ id }) => id === pokemon.id);
   newTrainer.pokemons[index].nickname = trimAvoidCharacters(nickname.value);
   nickname.value = "";
-  const response = await $fetch(`/api/trainer/${route.params.name}`, { //非同期通信
+  //非同期通信
+  const response = await $fetch(`/api/trainer/${route.params.name}`, {
     baseURL: config.public.backendOrigin,
     method: "POST",
     headers: {
@@ -37,7 +40,8 @@ const onNickname = async (pokemon) => {
   onCloseNickname();
 };
 const onRelease = async (pokemonId) => {
-  const response = await fetch( //非同期通信
+  //非同期通信
+  const response = await fetch(
     `/api/trainer/${route.params.name}/pokemon/${pokemonId}`,
     {
       baseURL: config.public.backendOrigin,
@@ -81,14 +85,48 @@ const {
     </CatchButton>
     <GamifyList>
       <GamifyItem v-for="pokemon in trainer.pokemons" :key="pokemon.id">
+        <!-- スプライト -->
         <img :src="pokemon.sprites.front_default" />
+        <!-- 名前 -->
         <span class="pokemon-name">{{ pokemon.nickname || pokemon.name }}</span>
+
         <GamifyButton @click="onOpenNickname(pokemon)"
           >ニックネームをつける
         </GamifyButton>
         <GamifyButton @click="onOpenRelease(pokemon)"
           >はかせにおくる
         </GamifyButton>
+        <!-- 種族値 -->
+        <div class="table-stats">
+          <table>
+            <thead>
+              <tr>
+                <th>Height</th>
+                <th>Weight</th>
+                <th>Type</th>
+                <th>Abilities</th>
+                <th v-for='item in pokemon.stats'>{{item.stat.name}}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ pokemon.height }}</td>
+                <td>{{ pokemon.weight }}</td>
+                <td>
+                  <template v-for='item in pokemon.types'>
+                    {{item.type.name }},
+                  </template> 
+                </td>
+                <td>
+                  <template v-for='item in pokemon.abilities'>
+                    {{item.ability.name }},
+                  </template> 
+                </td>
+                <td v-for='item in pokemon.stats'>{{item.base_stat}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </GamifyItem>
     </GamifyList>
     <GamifyDialog
@@ -177,4 +215,19 @@ const {
   width: 3rem;
   height: 3rem;
 }
+
+.table-stats * {
+  border-collapse: collapse;
+  border: solid 2px #000000;
+  padding: 0.5rem;
+}
+
+.table-stats > table > thead > tr > th {
+  text-align: center;
+}
+
+.table-stats > table > tbody > tr > td {
+  text-align: right;
+}
+
 </style>

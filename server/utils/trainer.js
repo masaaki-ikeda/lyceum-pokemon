@@ -10,7 +10,8 @@ import s3Client from "./s3Client";
 const config = useRuntimeConfig();
 
 const streamToString = (stream) =>
-  new Promise((resolve, reject) => { // 非同期通信
+  // 非同期通信
+  new Promise((resolve, reject) => {
     const chunks = [];
     stream.on("data", (chunk) => chunks.push(chunk));
     stream.on("error", reject);
@@ -20,7 +21,11 @@ const streamToString = (stream) =>
 /** トレーナーの一覧の取得 */
 export const findTrainers = async () => {
   // S3バケットからトレーナー一覧を取得する
-  const objects = await s3Client.send( // 非同期通信
+   // 非同期通信
+  const objects = await s3Client.send(
+    // AWS S3 のバケットを用意し今回のサンプルシステムのコードからアクセスできた
+    // App Runner にデプロイして動作させられた（全機能実装完了しているかどうかは問わない）
+    // 要件を満たしたサーバ機能 (削除機能は含めなくて良い) 一式を実装できた
     new ListObjectsCommand({ Bucket: config.bucketName }),
   );
   return objects.Contents ?? [];
@@ -30,12 +35,15 @@ export const findTrainers = async () => {
 // トレーナーを取得する S3 クライアント処理の実装
 export const findTrainer = async (name) => {
   // S3バケットからトレーナーを取得する
-  const object = await s3Client.send( // 非同期通信
+  // 非同期通信
+  const object = await s3Client.send(
     new GetObjectCommand({
       Bucket: config.bucketName,
-      Key: `${name}.json`, // jsonファイルを指定
+      // jsonファイルを指定
+      Key: `${name}.json`,
     }),
   );
+  //バケットの内容をテキスト化して送信
   const trainer = JSON.parse(await streamToString(object.Body));
   return trainer;
 };
@@ -43,11 +51,14 @@ export const findTrainer = async (name) => {
 /** トレーナーの追加更新 */
 export const upsertTrainer = async (name, trainer) => {
   // S3バケットにトレーナーを追加更新する(衝突可能性あり)
-  const result = await s3Client.send( // 非同期通信
+  // 非同期通信
+  const result = await s3Client.send(
     new PutObjectCommand({
       Bucket: config.bucketName,
-      Key: `${name}.json`, // jsonファイルを指定
-      Body: JSON.stringify({ name: "", pokemons: [], ...trainer }), // jsonファイル
+      // jsonファイルを指定
+      Key: `${name}.json`,
+       // jsonファイルをテキスト化して送信
+      Body: JSON.stringify({ name: "", pokemons: [], ...trainer }),
     }),
   );
   return result;
@@ -57,10 +68,12 @@ export const upsertTrainer = async (name, trainer) => {
 // TODO: トレーナーを削除する S3 クライアント処理の実装
 export const deleteTrainer = async (name) => {
   // S3バケットからトレーナーを削除する
-  const result = await s3Client.send( // 非同期通信
+  // 非同期通信
+  const result = await s3Client.send(
     new DeleteObjectCommand({
       Bucket: config.bucketName,
-      Key: `${name}.json`, // jsonファイルを指定
+      // jsonファイルを指定
+      Key: `${name}.json`, 
     }),
   );
   return result;

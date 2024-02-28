@@ -13,7 +13,8 @@ function setDefault() {
 
 // はいボタンを押したときの処理
 const onSubmit = async () => {
-  const response = await $fetch("/api/trainer", { //非同期
+  //非同期
+  const response = await $fetch("/api/trainer", {
     baseURL: config.public.backendOrigin,
     method: "POST",
     headers: {
@@ -39,6 +40,11 @@ const onSubmit = async () => {
 const { dialog, onOpen, onClose } = useDialog();
 </script>
 
+<!-- 「あたらしくはじめる」画面を実装し、トレーナーの新規登録ができた
+「つづきからはじめる」画面を実装し、トレーナー一覧を表示できた
+「トレーナー情報」画面を実装し、トレーナーの情報を一部でも表示できた（情報の表示方法は問わない）
+「トレーナー情報」画面を実装し、トレーナーの保有ポケモンリストを画像付きで表示できた
+「ポケモンをつかまえる」画面を実装し、ポケモンゲットだぜ！できた -->
 <template>
   <div>
     <h1>あたらしくはじめる</h1>
